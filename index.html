@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Квартирник и Лотерея</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .button { 
+            display: block; 
+            width: 100%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            background-color: #40a7e3; 
+            color: white; 
+            text-align: center; 
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .info { background-color: #f0f0f0; padding: 15px; border-radius: 10px; margin-bottom: 20px;}
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h2>Добро пожаловать на квартирник! 🎵</h2>
+        <p>Мы проводим тёплый музыкальный вечер с благотворительной лотереей. Часть средств пойдет на лечение Айнура.</p>
+    </div>
+
+    <!-- Кнопки ведут напрямую на страницы сбора в Тинькофф -->
+    <a class="button" href="https://tinkoff.ru/.../..." target="_blank">🎫 Купить билет на квартирник (250 руб)</a>
+    <a class="button" href="https://tinkoff.ru/.../..." target="_blank">🎲 Купить лотерейный билет (100 руб)</a>
+
+    <p><strong>После оплаты</strong>, пожалуйста, заполните форму ниже для связи:</p>
+
+    <form id="user-form">
+        <input type="text" id="fio" placeholder="Ваше ФИО" required style="width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box;">
+        <input type="tel" id="phone" placeholder="Ваш телефон" required style="width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box;">
+        <input type="hidden" id="order-type" value="">
+        <button type="submit" style="width: 100%; padding: 15px; background-color: #34c759; color: white; border: none; border-radius: 10px;">Отправить данные</button>
+    </form>
+
+    <script>
+        // Инициализируем Telegram WebApp
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Раскрываем приложение на весь экран
+        tg.MainButton.hide(); // Скрываем кнопку внизу, т.к. она нам не нужна
+
+        // Обработчик выбора типа заказа (чтобы знать, что сохранять в БД)
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function() {
+                if(this.textContent.includes('квартирник')) {
+                    document.getElementById('order-type').value = 'ticket';
+                } else if(this.textContent.includes('лотерейный')) {
+                    document.getElementById('order-type').value = 'lottery';
+                }
+            });
+        });
+
+        // Отправляем данные в бот при отправке формы
+        document.getElementById('user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                fio: document.getElementById('fio').value,
+                phone: document.getElementById('phone').value,
+                type: document.getElementById('order-type').value
+            };
+            
+            // Отправляем данные в бот и закрываем WebApp
+            tg.sendData(JSON.stringify(data));
+            tg.close();
+        });
+    </script>
+</body>
+</html>
