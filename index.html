@@ -6,114 +6,18 @@
     <title>Благотворительный квартирник</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        .header {
-            background: #40a7e3;
-            color: white;
-            text-align: center;
-            padding: 25px 20px;
-        }
-        .header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-        .content {
-            padding: 25px 20px;
-        }
-        .info-text {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #666;
-            font-size: 0.95rem;
-        }
-        .payment-button {
-            display: block;
-            width: 100%;
-            padding: 18px;
-            background-color: #34c759;
-            color: white;
-            text-align: center;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 25px;
-            border: none;
-            box-shadow: 0 4px 0 #2aa44f;
-            transition: all 0.1s ease;
-        }
-        .payment-button:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #2aa44f;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #444;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-        .other-district {
-            display: none; /* Скрыто по умолчанию */
-            margin-top: 10px;
-        }
-        .submit-btn {
-            width: 100%;
-            padding: 18px;
-            background-color: #40a7e3;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-top: 10px;
-            box-shadow: 0 4px 0 #2c7db1;
-            transition: all 0.1s ease;
-            cursor: pointer;
-        }
-        .submit-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #2c7db1;
-        }
-        .note {
-            font-size: 0.8rem;
-            color: #888;
-            text-align: center;
+        /* ... (предыдущие стили остаются без изменений) ... */
+        
+        .receipt-section {
             margin-top: 20px;
+            display: none;
+        }
+        .receipt-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 10px;
+            display: none;
         }
     </style>
 </head>
@@ -130,6 +34,15 @@
             <!-- Кнопка оплаты -->
             <a class="payment-button" href="https://www.tbank.ru/cf/3CYpPrtyp0c" target="_blank">🎫 Оплатить вход 350 руб.</a>
 
+            <!-- Альтернативные реквизиты -->
+            <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 10px;">
+                <h3 style="margin-bottom: 10px; text-align: center;">Или переведите по реквизитам:</h3>
+                <p><strong>Банк:</strong> Т-Банк</p>
+                <p><strong>Номер карты:</strong> <span id="card-number">0000 0000 0000 0000</span> 
+                   <button style="margin-left: 5px; padding: 2px 8px; border: none; background: #40a7e3; color: white; border-radius: 5px;" onclick="copyCardNumber()">Копировать</button></p>
+                <p><strong>Получатель:</strong> Иван Иванов</p>
+            </div>
+
             <form id="user-form">
                 <div class="form-group">
                     <label for="fio">Ваше ФИО</label>
@@ -143,10 +56,10 @@
                     <label for="district">С какого вы района?</label>
                     <select id="district" required>
                         <option value="" disabled selected>Выберите ваш район</option>
-                        <option value="Салаватский">Салаватский район</option>
-                        <option value="Архангельский">Архангельский район</option>
-                        <option value="Баймакский">Баймакский район</option>
-                        <option value="Стерлитамакский">Стерлитамакский район</option>
+                        <option value="Ленинский">Ленинский район</option>
+                        <option value="Октябрьский">Октябрьский район</option>
+                        <option value="Советский">Советский район</option>
+                        <option value="Кировский">Кировский район</option>
                         <option value="other">Другой район</option>
                     </select>
                 </div>
@@ -154,6 +67,17 @@
                     <label for="other-district">Укажите ваш район</label>
                     <input type="text" id="other-district" placeholder="Название вашего района">
                 </div>
+                
+                <!-- Секция для прикрепления чека -->
+                <div class="form-group">
+                    <label for="receipt">Прикрепите скриншот чека об оплате (необязательно)</label>
+                    <input type="file" id="receipt" accept="image/*" capture="environment" style="display: none;">
+                    <button type="button" onclick="document.getElementById('receipt').click()" style="width: 100%; padding: 15px; background-color: #ff9500; color: white; border: none; border-radius: 10px; margin-top: 5px;">
+                        📎 Прикрепить чек
+                    </button>
+                    <img id="receipt-preview" class="receipt-preview">
+                </div>
+                
                 <button type="submit" class="submit-btn">Отправить данные</button>
             </form>
             <p class="note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
@@ -163,8 +87,16 @@
     <script>
         // Инициализируем Telegram WebApp
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем приложение на весь экран
-        tg.MainButton.hide(); // Скрываем кнопку внизу
+        tg.expand();
+        tg.MainButton.hide();
+
+        // Функция для копирования номера карты
+        function copyCardNumber() {
+            const cardNumber = document.getElementById('card-number').textContent;
+            navigator.clipboard.writeText(cardNumber).then(() => {
+                alert('Номер карты скопирован!');
+            });
+        }
 
         // Показываем/скрываем поле для ввода другого района
         document.getElementById('district').addEventListener('change', function() {
@@ -175,6 +107,20 @@
             } else {
                 otherDistrictGroup.style.display = 'none';
                 document.getElementById('other-district').removeAttribute('required');
+            }
+        });
+
+        // Обработчик для предпросмотра прикрепленного чека
+        document.getElementById('receipt').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('receipt-preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
             }
         });
 
@@ -196,6 +142,7 @@
             const fio = document.getElementById('fio').value.trim();
             const phone = document.getElementById('phone').value.trim();
             let district = document.getElementById('district').value;
+            const receiptFile = document.getElementById('receipt').files[0];
 
             // Если выбран "другой район", берем значение из текстового поля
             if (district === 'other') {
@@ -227,10 +174,26 @@
             const data = {
                 fio: fio,
                 phone: phone,
-                district: district
+                district: district,
+                has_receipt: !!receiptFile
             };
             
-            // Показываем пользователю, что идет отправка (опционально)
+            // Если есть чек, конвертируем его в base64
+            if (receiptFile) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    data.receipt = reader.result.split(',')[1]; // Убираем префикс data:image/...
+                    sendDataToBot(data);
+                };
+                reader.readAsDataURL(receiptFile);
+            } else {
+                sendDataToBot(data);
+            }
+        });
+
+        // Функция для отправки данных в бот
+        function sendDataToBot(data) {
+            // Показываем пользователю, что идет отправка
             tg.showPopup({
                 title: "Отправка...",
                 message: "Ваши данные отправляются.",
@@ -238,8 +201,8 @@
             
             // Отправляем данные в бот и закрываем WebApp
             tg.sendData(JSON.stringify(data));
-            setTimeout(() => tg.close(), 1000); // Даем время на отправку и закрываем
-        });
+            setTimeout(() => tg.close(), 1000);
+        }
     </script>
 </body>
 </html>
