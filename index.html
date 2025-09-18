@@ -87,6 +87,10 @@
             border-radius: 10px;
             font-size: 1rem;
         }
+        .other-district {
+            display: none; /* Скрыто по умолчанию */
+            margin-top: 10px;
+        }
         .submit-btn {
             width: 100%;
             padding: 18px;
@@ -139,12 +143,16 @@
                     <label for="district">С какого вы района?</label>
                     <select id="district" required>
                         <option value="" disabled selected>Выберите ваш район</option>
-                        <option value="Ленинский">Ленинский район</option>
-                        <option value="Октябрьский">Октябрьский район</option>
-                        <option value="Советский">Советский район</option>
-                        <option value="Кировский">Кировский район</option>
-                        <option value="Другой">Другой район</option>
+                        <option value="Салаватский">Салаватский район</option>
+                        <option value="Архангельский">Архангельский район</option>
+                        <option value="Баймакский">Баймакский район</option>
+                        <option value="Стерлитамакский">Стерлитамакский район</option>
+                        <option value="other">Другой район</option>
                     </select>
+                </div>
+                <div class="form-group other-district" id="other-district-group">
+                    <label for="other-district">Укажите ваш район</label>
+                    <input type="text" id="other-district" placeholder="Название вашего района">
                 </div>
                 <button type="submit" class="submit-btn">Отправить данные</button>
             </form>
@@ -157,6 +165,18 @@
         let tg = window.Telegram.WebApp;
         tg.expand(); // Раскрываем приложение на весь экран
         tg.MainButton.hide(); // Скрываем кнопку внизу
+
+        // Показываем/скрываем поле для ввода другого района
+        document.getElementById('district').addEventListener('change', function() {
+            const otherDistrictGroup = document.getElementById('other-district-group');
+            if (this.value === 'other') {
+                otherDistrictGroup.style.display = 'block';
+                document.getElementById('other-district').setAttribute('required', 'true');
+            } else {
+                otherDistrictGroup.style.display = 'none';
+                document.getElementById('other-district').removeAttribute('required');
+            }
+        });
 
         // Функция для проверки (валидации) номера телефона
         function validatePhone(phone) {
@@ -175,7 +195,17 @@
             
             const fio = document.getElementById('fio').value.trim();
             const phone = document.getElementById('phone').value.trim();
-            const district = document.getElementById('district').value;
+            let district = document.getElementById('district').value;
+
+            // Если выбран "другой район", берем значение из текстового поля
+            if (district === 'other') {
+                const otherDistrict = document.getElementById('other-district').value.trim();
+                if (!otherDistrict) {
+                    alert('Пожалуйста, укажите ваш район.');
+                    return;
+                }
+                district = otherDistrict;
+            }
 
             // Проверяем данные
             if (!validateFio(fio)) {
