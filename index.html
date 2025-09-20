@@ -358,26 +358,31 @@
         });
 
         // Функция для отправки данных в бот
-        function sendDataToBot(data) {
-            console.log("Отправка данных в бот...");
-            
-            // Показываем пользователю, что идет отправка
-            tg.showPopup({
-                title: "Отправка...",
-                message: "Ваши данные отправляются.",
-            });
-            
-            try {
-                // Отправляем данные в бот
-                tg.sendData(JSON.stringify(data));
-                console.log("Данные успешно отправлены через tg.sendData");
-                
-                // Закрываем WebApp
-                setTimeout(() => {
-                    console.log("Закрытие WebApp...");
-                    tg.close();
-                }, 1000);
-            } catch (error) {
+        <script>
+// Функция для отправки данных в бот
+function sendDataToBot(data) {
+    console.log("Отправка данных в бот...");
+    
+    // Формируем специальную команду для бота
+    const message = `Данные_регистрации: ${data.fio}, ${data.phone}, ${data.district}`;
+    
+    // Создаем ссылку для открытия бота с предзаполненным сообщением
+    const botUsername = 'your_bot_username'; // Замените на username вашего бота
+    const url = `https://t.me/${botUsername}?start=${encodeURIComponent(message)}`;
+    
+    // Открываем ссылку в новом окне
+    window.open(url, '_blank');
+    
+    // Показываем пользователю инструкцию
+    tg.showPopup({
+        title: "Регистрация завершена",
+        message: "Для завершения регистрации перейдите в чат с ботом и отправьте сообщение.",
+    });
+    
+    // Закрываем WebApp
+    setTimeout(() => tg.close(), 3000);
+}
+            catch (error) {
                 console.error("Ошибка при отправке данных:", error);
                 alert("Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.");
             }
@@ -385,3 +390,4 @@
     </script>
 </body>
 </html>
+
