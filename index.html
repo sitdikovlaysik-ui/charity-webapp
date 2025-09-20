@@ -228,125 +228,142 @@
     </div>
 
     <script>
-        // Инициализируем Telegram WebApp
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.MainButton.hide();
+    // Инициализируем Telegram WebApp
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.MainButton.hide();
 
-        // Функция для копирования номера телефона
-        function copyCardNumber() {
-            const cardNumber = document.getElementById('card-number').textContent;
-            navigator.clipboard.writeText(cardNumber).then(() => {
-                alert('Номер телефона скопирован!');
-            });
-        }
-
-        // Показываем/скрываем поле для ввода другого района
-        document.getElementById('district').addEventListener('change', function() {
-            const otherDistrictGroup = document.getElementById('other-district-group');
-            if (this.value === 'other') {
-                otherDistrictGroup.style.display = 'block';
-                document.getElementById('other-district').setAttribute('required', 'true');
-            } else {
-                otherDistrictGroup.style.display = 'none';
-                document.getElementById('other-district').removeAttribute('required');
-            }
+    // Функция для копирования номера карты
+    function copyCardNumber() {
+        const cardNumber = document.getElementById('card-number').textContent;
+        navigator.clipboard.writeText(cardNumber).then(() => {
+            alert('Номер карты скопирован!');
         });
+    }
 
-        // Обработчик для предпросмотра прикрепленного чека
-        document.getElementById('receipt').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('receipt-preview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
+    // Показываем/скрываем поле для ввода другого района
+    document.getElementById('district').addEventListener('change', function() {
+        const otherDistrictGroup = document.getElementById('other-district-group');
+        if (this.value === 'other') {
+            otherDistrictGroup.style.display = 'block';
+            document.getElementById('other-district').setAttribute('required', 'true');
+        } else {
+            otherDistrictGroup.style.display = 'none';
+            document.getElementById('other-district').removeAttribute('required');
+        }
+    });
+
+    // Обработчик для предпросмотра прикрепленного чека
+    document.getElementById('receipt').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('receipt-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
             }
-        });
+            reader.readAsDataURL(file);
+        }
+    });
 
-        // Функция для проверки (валидации) номера телефона
-        function validatePhone(phone) {
-            const phoneRegex = /^[\d\+][\d\s\-\(\)]{9,15}$/;
-            return phoneRegex.test(phone);
+    // Функция для проверки (валидации) номера телефона
+    function validatePhone(phone) {
+        const phoneRegex = /^[\d\+][\d\s\-\(\)]{9,15}$/;
+        return phoneRegex.test(phone);
+    }
+
+    // Функция для проверки ФИО (минимум 2 слова)
+    function validateFio(fio) {
+        return fio.split(' ').length >= 2;
+    }
+
+    // Отправляем данные в бот при отправке формы
+    document.getElementById('user-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const fio = document.getElementById('fio').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        let district = document.getElementById('district').value;
+        const receiptFile = document.getElementById('receipt').files[0];
+
+        // Если выбран "другой район", берем значение из текстового поля
+        if (district === 'other') {
+            const otherDistrict = document.getElementById('other-district').value.trim();
+            if (!otherDistrict) {
+                alert('Пожалуйста, укажите ваш район.');
+                return;
+            }
+            district = otherDistrict;
         }
 
-        // Функция для проверки ФИО (минимум 2 слова)
-        function validateFio(fio) {
-            return fio.split(' ').length >= 2;
+        // Проверяем данные
+        if (!validateFio(fio)) {
+            alert('Пожалуйста, введите Ваши Фамилию и Имя (минимум два слова).');
+            return;
         }
-
-        // Отправляем данные в бот при отправке формы
-        document.getElementById('user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fio = document.getElementById('fio').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            let district = document.getElementById('district').value;
-            const receiptFile = document.getElementById('receipt').files[0];
-
-            // Если выбран "другой район", берем значение из текстового поля
-            if (district === 'other') {
-                const otherDistrict = document.getElementById('other-district').value.trim();
-                if (!otherDistrict) {
-                    alert('Пожалуйста, укажите ваш район.');
-                    return;
-                }
-                district = otherDistrict;
-            }
-
-            // Проверяем данные
-            if (!validateFio(fio)) {
-                alert('Пожалуйста, введите Ваши Фамилию и Имя (минимум два слова).');
-                return;
-            }
-            
-            if (!validatePhone(phone)) {
-                alert('Пожалуйста, введите корректный номер телефона.');
-                return;
-            }
-            
-            if (!district) {
-                alert('Пожалуйста, выберите ваш район.');
-                return;
-            }
-            
-            // Если проверки пройдены, готовим данные к отправке
-            const data = {
-                fio: fio,
-                phone: phone,
-                district: district,
-                has_receipt: !!receiptFile
-            };
-            
-            // Если есть чек, конвертируем его в base64
-            if (receiptFile) {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    data.receipt = reader.result.split(',')[1]; // Убираем префикс data:image/...
-                    sendDataToBot(data);
-                };
-                reader.readAsDataURL(receiptFile);
-            } else {
+        
+        if (!validatePhone(phone)) {
+            alert('Пожалуйста, введите корректный номер телефона.');
+            return;
+        }
+        
+        if (!district) {
+            alert('Пожалуйста, выберите ваш район.');
+            return;
+        }
+        
+        // Если проверки пройдены, готовим данные к отправке
+        const data = {
+            fio: fio,
+            phone: phone,
+            district: district,
+            has_receipt: !!receiptFile
+        };
+        
+        console.log("Подготовлены данные для отправки:", data);
+        
+        // Если есть чек, конвертируем его в base64
+        if (receiptFile) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                data.receipt = reader.result.split(',')[1];
+                console.log("Данные с чеком готовы:", data);
                 sendDataToBot(data);
-            }
-        });
-
-        // Функция для отправки данных в бот
-        function sendDataToBot(data) {
-            // Показываем пользователю, что идет отправка
-            tg.showPopup({
-                title: "Отправка...",
-                message: "Ваши данные отправляются.",
-            });
-            
-            // Отправляем данные в бот и закрываем WebApp
-            tg.sendData(JSON.stringify(data));
-            setTimeout(() => tg.close(), 1000);
+            };
+            reader.readAsDataURL(receiptFile);
+        } else {
+            sendDataToBot(data);
         }
+    });
+
+    // Функция для отправки данных в бот
+    function sendDataToBot(data) {
+        console.log("Отправка данных в бот...");
+        
+        // Показываем пользователю, что идет отправка
+        tg.showPopup({
+            title: "Отправка...",
+            message: "Ваши данные отправляются.",
+        });
+        
+        try {
+            // Отправляем данные в бот
+            tg.sendData(JSON.stringify(data));
+            console.log("Данные успешно отправлены через tg.sendData");
+            
+            // Закрываем WebApp
+            setTimeout(() => {
+                console.log("Закрытие WebApp...");
+                tg.close();
+            }, 1000);
+        } catch (error) {
+            console.error("Ошибка при отправке данных:", error);
+            alert("Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.");
+        }
+    }
     </script>
 </body>
 </html>
+
 
