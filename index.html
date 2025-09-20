@@ -359,16 +359,16 @@
 
         // Функция для отправки данных в бот
         <script>
-// Функция для отправки данных в бот
+// Функция для отправки данных в бот через команду /start
 function sendDataToBot(data) {
-    console.log("Отправка данных в бот...");
+    console.log("Отправка данных в бот через команду /start...");
     
-    // Формируем специальную команду для бота
-    const message = `Данные_регистрации: ${data.fio}, ${data.phone}, ${data.district}`;
+    // Формируем параметры для команды /start
+    const params = `fio=${encodeURIComponent(data.fio)}&phone=${encodeURIComponent(data.phone)}&district=${encodeURIComponent(data.district)}`;
     
-    // Создаем ссылку для открытия бота с предзаполненным сообщением
-    const botUsername = 'your_bot_username'; // Замените на username вашего бота
-    const url = `https://t.me/${botUsername}?start=${encodeURIComponent(message)}`;
+    // Создаем ссылку для открытия бота с командой /start и параметрами
+    const botUsername = '@helptoAinur_bot'; // Замените на username вашего бота
+    const url = `https://t.me/${botUsername}?start=${params}`;
     
     // Открываем ссылку в новом окне
     window.open(url, '_blank');
@@ -376,18 +376,14 @@ function sendDataToBot(data) {
     // Показываем пользователю инструкцию
     tg.showPopup({
         title: "Регистрация завершена",
-        message: "Для завершения регистрации перейдите в чат с ботом и отправьте сообщение.",
+        message: "Для завершения регистрации перейдите в чат с ботом.",
     });
     
     // Закрываем WebApp
     setTimeout(() => tg.close(), 3000);
 }
-            catch (error) {
-                console.error("Ошибка при отправке данных:", error);
-                alert("Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.");
-            }
-        }
-    </script>
+</script>
 </body>
 </html>
+
 
