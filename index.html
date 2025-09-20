@@ -228,8 +228,32 @@
     </div>
 
     <script>
+        <script>
     // Инициализируем Telegram WebApp
     let tg = window.Telegram.WebApp;
+    
+    // Заглушка для тестирования в браузере
+    if (typeof tg === 'undefined' || !tg.initData) {
+        console.log("Режим тестирования в браузере");
+        tg = {
+            expand: function() { console.log("WebApp expanded"); },
+            MainButton: {
+                hide: function() { console.log("MainButton hidden"); }
+            },
+            showPopup: function(params) { 
+                alert(params.title + ": " + params.message);
+            },
+            sendData: function(data) {
+                console.log("Данные отправлены в бот:", data);
+                alert("Данные успешно отправлены! В Telegram это закрыло бы приложение.");
+            },
+            close: function() { console.log("WebApp closed"); }
+        };
+    } else {
+        tg.expand();
+        tg.MainButton.hide();
+    }
+</script>
     tg.expand();
     tg.MainButton.hide();
 
@@ -365,5 +389,6 @@
     </script>
 </body>
 </html>
+
 
 
