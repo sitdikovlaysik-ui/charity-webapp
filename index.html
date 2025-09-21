@@ -1,389 +1,102 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Благотворительный квартирник</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        .header {
-            background: #40a7e3;
-            color: white;
-            text-align: center;
-            padding: 25px 20px;
-        }
-        .header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-        .content {
-            padding: 25px 20px;
-        }
-        .info-text {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #666;
-            font-size: 0.95rem;
-        }
-        .payment-button {
-            display: block;
-            width: 100%;
-            padding: 18px;
-            background-color: #34c759;
-            color: white;
-            text-align: center;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 25px;
-            border: none;
-            box-shadow: 0 4px 0 #2aa44f;
-            transition: all 0.1s ease;
-        }
-        .payment-button:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #2aa44f;
-        }
-        .bank-details {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .bank-details h3 {
-            margin-bottom: 10px;
-            text-align: center;
-            color: #333;
-        }
-        .bank-details p {
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        .copy-btn {
-            margin-left: 5px;
-            padding: 2px 8px;
-            border: none;
-            background: #40a7e3;
-            color: white;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #444;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-        .other-district {
-            display: none;
-            margin-top: 10px;
-        }
-        .receipt-section {
-            margin-top: 15px;
-        }
-        .receipt-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #ff9500;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            margin-top: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .receipt-preview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 10px;
-            border-radius: 10px;
-            display: none;
-        }
-        .submit-btn {
-            width: 100%;
-            padding: 18px;
-            background-color: #40a7e3;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-top: 10px;
-            box-shadow: 0 4px 0 #2c7db1;
-            transition: all 0.1s ease;
-            cursor: pointer;
-        }
-        .submit-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #2c7db1;
-        }
-        .note {
-            font-size: 0.8rem;
-            color: #888;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Благотворительный квартирник</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    label { display: block; margin-top: 10px; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+    .copy-btn { margin-top: 5px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Благотворительный квартирник</h1>
-            <p>Сбор средств на лечение Айнура</p>
-        </div>
+  <h2>Регистрация на квартирник</h2>
+  <form id="ticketForm">
+    <label>ФИО
+      <input type="text" id="fio" required />
+    </label>
+    <label>Телефон
+      <input type="tel" id="phone" required />
+    </label>
+    <label>Район
+      <select id="district" required>
+        <option value="">Выберите район</option>
+        <option value="Абзелиловский">Абзелиловский</option>
+        <option value="Баймакский">Баймакский</option>
+        <option value="Стерлитамакский">Стерлитамакский</option>
+        <option value="Уфимский">Уфимский</option>
+        <option value="Другой">Другой</option>
+      </select>
+    </label>
+    <label id="customDistrictLabel" style="display:none;">Введите район
+      <input type="text" id="customDistrict" />
+    </label>
+    <label>Чек об оплате (фото)
+      <input type="file" id="receipt" accept="image/*" required />
+    </label>
+    <button type="button" id="payButton">Оплатить 350 руб через Tinkoff</button>
+    <p>Или оплатите через Т-Банк:</p>
+    <p>Реквизиты: <span id="bankDetails">+7 987 092 0046</span></p>
+    <button type="button" class="copy-btn" id="copyBtn">Скопировать номер</button>
+    <button type="submit">Отправить данные</button>
+  </form>
 
-        <div class="content">
-            <p class="info-text">После успешной оплаты заполните форму ниже для связи и подтверждения заказа.</p>
-
-            <!-- Кнопка оплаты -->
-            <a class="payment-button" href="https://www.tbank.ru/cf/3CYpPrtyp0c" target="_blank">🎫 Оплатить вход 350 руб.</a>
-
-            <!-- Альтернативные реквизиты -->
-            <div class="bank-details">
-                <h3>Или переведите по реквизитам:</h3>
-                <p><strong>Банк:</strong> Т-Банк</p>
-                <p><strong>Номер карты:</strong> <span id="card-number">0000 0000 0000 0000</span> 
-                   <button class="copy-btn" onclick="copyCardNumber()">Копировать</button></p>
-                <p><strong>Получатель:</strong> Иван Иванов</p>
-            </div>
-
-            <form id="user-form">
-                <div class="form-group">
-                    <label for="fio">Ваше ФИО</label>
-                    <input type="text" id="fio" placeholder="Иванов Иван Иванович" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Ваш телефон</label>
-                    <input type="tel" id="phone" placeholder="+7 (900) 123-45-67" required>
-                </div>
-                <div class="form-group">
-                    <label for="district">С какого вы района?</label>
-                    <select id="district" required>
-                        <option value="" disabled selected>Выберите ваш район</option>
-                        <option value="Ленинский">Ленинский район</option>
-                        <option value="Октябрьский">Октябрьский район</option>
-                        <option value="Советский">Советский район</option>
-                        <option value="Кировский">Кировский район</option>
-                        <option value="other">Другой район</option>
-                    </select>
-                </div>
-                <div class="form-group other-district" id="other-district-group">
-                    <label for="other-district">Укажите ваш район</label>
-                    <input type="text" id="other-district" placeholder="Название вашего района">
-                </div>
-                
-                <!-- Секция для прикрепления чека -->
-                <div class="form-group receipt-section">
-                    <label for="receipt">Прикрепите скриншот чека об оплате (необязательно)</label>
-                    <input type="file" id="receipt" accept="image/*" capture="environment" style="display: none;">
-                    <button type="button" class="receipt-btn" onclick="document.getElementById('receipt').click()">
-                        📎 Прикрепить чек
-                    </button>
-                    <img id="receipt-preview" class="receipt-preview">
-                </div>
-                
-                <button type="submit" class="submit-btn">Отправить данные</button>
-            </form>
-            <p class="note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
-        </div>
-    </div>
-
-    <script>
-        // Инициализируем Telegram WebApp
-        let tg = window.Telegram.WebApp;
-        
-        // Заглушка для тестирования в браузере
-        if (typeof tg === 'undefined' || !tg.initData) {
-            console.log("Режим тестирования в браузере");
-            tg = {
-                expand: function() { console.log("WebApp expanded"); },
-                MainButton: {
-                    hide: function() { console.log("MainButton hidden"); }
-                },
-                showPopup: function(params) { 
-                    alert(params.title + ": " + params.message);
-                },
-                sendData: function(data) {
-                    console.log("Данные отправлены в бот:", data);
-                    alert("Данные успешно отправлены! В Telegram это закрыло бы приложение.");
-                },
-                close: function() { console.log("WebApp closed"); }
-            };
-        } else {
-            tg.expand();
-            tg.MainButton.hide();
-        }
-        
-        // Функция для копирования номера карты
-        function copyCardNumber() {
-            const cardNumber = document.getElementById('card-number').textContent;
-            navigator.clipboard.writeText(cardNumber).then(() => {
-                alert('Номер карты скопирован!');
-            });
-        }
-
-        // Показываем/скрываем поле для ввода другого района
-        document.getElementById('district').addEventListener('change', function() {
-            const otherDistrictGroup = document.getElementById('other-district-group');
-            if (this.value === 'other') {
-                otherDistrictGroup.style.display = 'block';
-                document.getElementById('other-district').setAttribute('required', 'true');
-            } else {
-                otherDistrictGroup.style.display = 'none';
-                document.getElementById('other-district').removeAttribute('required');
-            }
-        });
-
-        // Обработчик для предпросмотра прикрепленного чека
-        document.getElementById('receipt').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('receipt-preview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Функция для проверки (валидации) номера телефона
-        function validatePhone(phone) {
-            const phoneRegex = /^[\d\+][\d\s\-\(\)]{9,15}$/;
-            return phoneRegex.test(phone);
-        }
-
-        // Функция для проверки ФИО (минимум 2 слова)
-        function validateFio(fio) {
-            return fio.split(' ').length >= 2;
-        }
-
-        // Отправляем данные в бот при отправке формы
-        document.getElementById('user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fio = document.getElementById('fio').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            let district = document.getElementById('district').value;
-            const receiptFile = document.getElementById('receipt').files[0];
-
-            // Если выбран "другой район", берем значение из текстового поля
-            if (district === 'other') {
-                const otherDistrict = document.getElementById('other-district').value.trim();
-                if (!otherDistrict) {
-                    alert('Пожалуйста, укажите ваш район.');
-                    return;
-                }
-                district = otherDistrict;
-            }
-
-            // Проверяем данные
-            if (!validateFio(fio)) {
-                alert('Пожалуйста, введите Ваши Фамилию и Имя (минимум два слова).');
-                return;
-            }
-            
-            if (!validatePhone(phone)) {
-                alert('Пожалуйста, введите корректный номер телефона.');
-                return;
-            }
-            
-            if (!district) {
-                alert('Пожалуйста, выберите ваш район.');
-                return;
-            }
-            
-            // Если проверки пройдены, готовим данные к отправке
-            const data = {
-                fio: fio,
-                phone: phone,
-                district: district,
-                has_receipt: !!receiptFile
-            };
-            
-            console.log("Подготовлены данные для отправки:", data);
-            
-            // Если есть чек, конвертируем его в base64
-            if (receiptFile) {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    data.receipt = reader.result.split(',')[1];
-                    console.log("Данные с чеком готовы:", data);
-                    sendDataToBot(data);
-                };
-                reader.readAsDataURL(receiptFile);
-            } else {
-                sendDataToBot(data);
-            }
-        });
-
-        // Функция для отправки данных в бот
-        <script>
-// Функция для отправки данных в бот через команду /start
-function sendDataToBot(data) {
-    console.log("Отправка данных в бот через команду /start...");
-    
-    // Формируем параметры для команды /start
-    const params = `fio=${encodeURIComponent(data.fio)}&phone=${encodeURIComponent(data.phone)}&district=${encodeURIComponent(data.district)}`;
-    
-    // Создаем ссылку для открытия бота с командой /start и параметрами
-    const botUsername = '@helptoAinur_bot'; // Замените на username вашего бота
-    const url = `https://t.me/${botUsername}?start=${params}`;
-    
-    // Открываем ссылку в новом окне
-    window.open(url, '_blank');
-    
-    // Показываем пользователю инструкцию
-    tg.showPopup({
-        title: "Регистрация завершена",
-        message: "Для завершения регистрации перейдите в чат с ботом.",
+  <script>
+    const districtSelect = document.getElementById('district');
+    const customDistrictLabel = document.getElementById('customDistrictLabel');
+    districtSelect.addEventListener('change', () => {
+      if (districtSelect.value === 'Другой') {
+        customDistrictLabel.style.display = 'block';
+        document.getElementById('customDistrict').required = true;
+      } else {
+        customDistrictLabel.style.display = 'none';
+        document.getElementById('customDistrict').required = false;
+      }
     });
-    
-    // Закрываем WebApp
-    setTimeout(() => tg.close(), 3000);
-}
-</script>
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const bankDetails = document.getElementById('bankDetails').textContent;
+      navigator.clipboard.writeText(bankDetails).then(() => {
+        alert('Реквизиты скопированы в буфер обмена');
+      });
+    });
+
+    // Здесь можно добавить интеграцию с Tinkoff оплатой (по API или redirect)
+
+    const form = document.getElementById('ticketForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fio = document.getElementById('fio').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      let district = districtSelect.value;
+      if (district === 'Другой') {
+        district = document.getElementById('customDistrict').value.trim();
+      }
+      const receiptFile = document.getElementById('receipt').files[0];
+      if (!receiptFile) {
+        alert('Пожалуйста, прикрепите чек об оплате');
+        return;
+      }
+
+      // Читаем файл в base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        const receiptBase64 = reader.result.split(',')[1]; // убираем префикс data:image/...
+
+        // Отправляем данные в Telegram бота через WebApp
+        if (window.Telegram.WebApp) {
+          window.Telegram.WebApp.sendData(JSON.stringify({
+            fio, phone, district, receipt: receiptBase64
+          }));
+        } else {
+          alert('Ошибка: WebApp не доступен');
+        }
+      };
+      reader.readAsDataURL(receiptFile);
+    });
+  </script>
 </body>
 </html>
-
-
